@@ -1,46 +1,367 @@
+
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#b5121b"><meta name="description" content="Wattmeister Solar Monitoring Portal">
-  <title>Wattmeister | Solar Monitoring</title><link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#b5121b">
+  <meta name="description" content="Wattmeister Solar Monitoring Portal">
+
+  <title>Wattmeister | Solar Monitoring</title>
+
+  <link rel="stylesheet" href="styles.css">
+
+  <style>
+    .brand-logo {
+      display: block;
+      width: 230px;
+      max-width: 100%;
+      height: 58px;
+      object-fit: contain;
+      object-position: left center;
+    }
+
+    .sidebar .brand-logo {
+      width: 190px;
+      height: 52px;
+    }
+
+    .brand-mark {
+      display: flex;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .brand-mark.light {
+      margin-bottom: 35px;
+    }
+  </style>
 </head>
+
 <body>
+
+  <!-- LOGIN PAGE -->
   <div id="loginView" class="login-wrap">
     <div class="login-card">
-      <div class="brand-mark"><span class="bolt">ϟ</span><div><strong>WATTMEISTER</strong><small>ENERGY LLP · SOLAR MONITORING</small></div></div>
-      <h1>Sign in</h1><p class="muted">Access your solar installation network.</p>
-      <form id="loginForm"><label>Email<input id="email" type="email" autocomplete="username" required placeholder="you@company.com"></label><label>Password<input id="password" type="password" autocomplete="current-password" required placeholder="Password"></label><button class="btn primary full" type="submit">Sign in</button></form>
-      <p id="loginError" class="error" role="alert"></p><p class="tiny muted">Access is restricted to authorised Wattmeister users.</p>
+
+      <div class="brand-mark">
+        <img
+          src="logo.png"
+          alt="Wattmeister Energy LLP"
+          class="brand-logo"
+        >
+      </div>
+
+      <h1>Sign in</h1>
+      <p class="muted">Access your solar installation network.</p>
+
+      <form id="loginForm">
+
+        <label>
+          Email
+          <input
+            id="email"
+            type="email"
+            autocomplete="username"
+            required
+            placeholder="you@company.com"
+          >
+        </label>
+
+        <label>
+          Password
+          <input
+            id="password"
+            type="password"
+            autocomplete="current-password"
+            required
+            placeholder="Password"
+          >
+        </label>
+
+        <button class="btn primary full" type="submit">
+          Sign in
+        </button>
+
+      </form>
+
+      <p id="loginError" class="error" role="alert"></p>
+
+      <p class="tiny muted">
+        Access is restricted to authorised Wattmeister users.
+      </p>
+
     </div>
   </div>
 
+
+  <!-- MAIN APPLICATION -->
   <div id="appView" class="app hidden">
+
+    <!-- SIDEBAR -->
     <aside class="sidebar">
-      <div class="brand-mark light"><span class="bolt">ϟ</span><div><strong>WATTMEISTER</strong><small>ENERGY LLP</small></div></div>
-      <div class="side-label">MONITORING</div><button class="nav active" data-page="overview">▦ &nbsp; Overview</button><button class="nav" data-page="sites">▤ &nbsp; All projects</button>
-      <div class="sidebar-foot"><span class="live-dot"></span> Portal connected</div>
+
+      <div class="brand-mark light">
+        <img
+          src="logo.png"
+          alt="Wattmeister Energy LLP"
+          class="brand-logo"
+        >
+      </div>
+
+      <div class="side-label">MONITORING</div>
+
+      <button class="nav active" data-page="overview">
+        ▦ &nbsp; Overview
+      </button>
+
+      <button class="nav" data-page="sites">
+        ▤ &nbsp; All projects
+      </button>
+
+      <div class="sidebar-foot">
+        <span class="live-dot"></span>
+        Portal connected
+      </div>
+
     </aside>
+
+
+    <!-- MAIN CONTENT -->
     <main class="main">
-      <header class="topbar"><div><div class="eyebrow">WATTMEISTER ENERGY LLP</div><h1 id="pageTitle">Solar overview</h1></div><div class="user-area"><span id="userEmail"></span><button id="logoutBtn" class="btn ghost">Sign out</button></div></header>
-      <section id="overviewPage" class="page">
-        <div class="notice"><strong>Monitoring scope:</strong> V1 reports the VPRA2M relay output and device connectivity. It does not measure actual grid export or solar generation.</div>
-        <div class="stats-grid">
-          <article class="stat-card"><span>Total projects</span><strong id="totalCount">0</strong><small>Registered installations</small></article>
-          <article class="stat-card"><span>Devices online</span><strong id="onlineCount" class="green">0</strong><small>Heartbeat within 2 minutes</small></article>
-          <article class="stat-card"><span>Relay output active</span><strong id="activeCount">0</strong><small>Based on commissioned polarity</small></article>
-          <article class="stat-card"><span>Attention / offline</span><strong id="attentionCount" class="red">0</strong><small>Inactive relay or stale heartbeat</small></article>
+
+      <header class="topbar">
+
+        <div>
+          <div class="eyebrow">WATTMEISTER ENERGY LLP</div>
+          <h1 id="pageTitle">Solar overview</h1>
         </div>
-        <div class="section-head"><div><h2>Installation status</h2><p class="muted">Live updates from registered ESP32 devices</p></div><button class="btn primary" id="addSiteBtn">＋ Add project</button></div>
-        <div id="siteGrid" class="site-grid"><div class="empty">Loading projects…</div></div>
+
+        <div class="user-area">
+          <span id="userEmail"></span>
+          <button id="logoutBtn" class="btn ghost">
+            Sign out
+          </button>
+        </div>
+
+      </header>
+
+
+      <!-- OVERVIEW PAGE -->
+      <section id="overviewPage" class="page">
+
+        <div class="notice">
+          <strong>Monitoring scope:</strong>
+          V1 reports the VPRA2M relay output and device connectivity.
+          It does not measure actual grid export or solar generation.
+        </div>
+
+        <div class="stats-grid">
+
+          <article class="stat-card">
+            <span>Total projects</span>
+            <strong id="totalCount">0</strong>
+            <small>Registered installations</small>
+          </article>
+
+          <article class="stat-card">
+            <span>Devices online</span>
+            <strong id="onlineCount" class="green">0</strong>
+            <small>Heartbeat within 2 minutes</small>
+          </article>
+
+          <article class="stat-card">
+            <span>Relay output active</span>
+            <strong id="activeCount">0</strong>
+            <small>Based on commissioned polarity</small>
+          </article>
+
+          <article class="stat-card">
+            <span>Attention / offline</span>
+            <strong id="attentionCount" class="red">0</strong>
+            <small>Inactive relay or stale heartbeat</small>
+          </article>
+
+        </div>
+
+
+        <div class="section-head">
+
+          <div>
+            <h2>Installation status</h2>
+            <p class="muted">
+              Live updates from registered ESP32 devices
+            </p>
+          </div>
+
+          <button class="btn primary" id="addSiteBtn">
+            ＋ Add project
+          </button>
+
+        </div>
+
+        <div id="siteGrid" class="site-grid">
+          <div class="empty">Loading projects…</div>
+        </div>
+
       </section>
-      <section id="sitesPage" class="page hidden"><div class="section-head"><div><h2>All projects</h2><p class="muted">Select a project to inspect its latest telemetry.</p></div><button class="btn primary" id="addSiteBtn2">＋ Add project</button></div><div id="siteTable" class="table-wrap"></div></section>
-      <section id="detailPage" class="page hidden"><button class="back-link" id="backBtn">← Back to projects</button><div id="siteDetail"></div></section>
-      <footer>Wattmeister Solar Monitoring Portal <span>·</span> V1.0</footer>
+
+
+      <!-- ALL PROJECTS PAGE -->
+      <section id="sitesPage" class="page hidden">
+
+        <div class="section-head">
+
+          <div>
+            <h2>All projects</h2>
+            <p class="muted">
+              Select a project to inspect its latest telemetry.
+            </p>
+          </div>
+
+          <button class="btn primary" id="addSiteBtn2">
+            ＋ Add project
+          </button>
+
+        </div>
+
+        <div id="siteTable" class="table-wrap"></div>
+
+      </section>
+
+
+      <!-- PROJECT DETAILS PAGE -->
+      <section id="detailPage" class="page hidden">
+
+        <button class="back-link" id="backBtn">
+          ← Back to projects
+        </button>
+
+        <div id="siteDetail"></div>
+
+      </section>
+
+
+      <footer>
+        Wattmeister Solar Monitoring Portal
+        <span>·</span>
+        V1.0
+      </footer>
+
     </main>
+
   </div>
 
-  <dialog id="addDialog"><form id="addSiteForm" method="dialog"><div class="dialog-head"><div><h2>Register a project</h2><p class="muted">Metadata is added by an authorised portal user.</p></div><button type="button" class="icon-btn" id="closeDialog">×</button></div><label>Site ID<input id="siteId" required pattern="[A-Za-z0-9_-]{3,24}" placeholder="WM-001"></label><label>Customer / project name<input id="siteName" required placeholder="Customer Site 001"></label><label>Location<input id="siteLocation" required placeholder="Pune, Maharashtra"></label><label>Solar capacity (kW)<input id="siteCapacity" type="number" min="0" step="0.1" placeholder="10"></label><p class="tiny muted">After adding the project, create a Firebase Auth user for its ESP32 and add that user's UID to /deviceMap/SITE-ID in the Firebase console. See README.</p><p id="addError" class="error"></p><div class="dialog-actions"><button type="button" class="btn ghost" id="cancelAdd">Cancel</button><button type="submit" class="btn primary">Save project</button></div></form></dialog>
+
+  <!-- ADD PROJECT DIALOG -->
+  <dialog id="addDialog">
+
+    <form id="addSiteForm" method="dialog">
+
+      <div class="dialog-head">
+
+        <div>
+          <h2>Register a project</h2>
+          <p class="muted">
+            Metadata is added by an authorised portal user.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="icon-btn"
+          id="closeDialog"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <label>
+        Site ID
+        <input
+          id="siteId"
+          required
+          pattern="[A-Za-z0-9_-]{3,24}"
+          placeholder="WM-001"
+        >
+      </label>
+
+
+      <label>
+        Customer / project name
+        <input
+          id="siteName"
+          required
+          placeholder="Customer Site 001"
+        >
+      </label>
+
+
+      <label>
+        Location
+        <input
+          id="siteLocation"
+          required
+          placeholder="Pune, Maharashtra"
+        >
+      </label>
+
+
+      <label>
+        Solar capacity (kW)
+        <input
+          id="siteCapacity"
+          type="number"
+          min="0"
+          step="0.1"
+          placeholder="10"
+        >
+      </label>
+
+
+      <p class="tiny muted">
+        After adding the project, create a Firebase Auth user
+        for its ESP32 and add that user's UID to
+        /deviceMap/SITE-ID in the Firebase console.
+        See README.
+      </p>
+
+
+      <p id="addError" class="error"></p>
+
+
+      <div class="dialog-actions">
+
+        <button
+          type="button"
+          class="btn ghost"
+          id="cancelAdd"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="submit"
+          class="btn primary"
+        >
+          Save project
+        </button>
+
+      </div>
+
+    </form>
+
+  </dialog>
+
+
+  <!-- NOTIFICATION -->
   <div id="toast" class="toast" role="status"></div>
+
+
+  <!-- FIREBASE APPLICATION SCRIPT -->
   <script type="module" src="app.js"></script>
-</body></html>
+
+</body>
+</html>
