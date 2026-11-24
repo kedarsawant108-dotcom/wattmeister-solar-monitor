@@ -23,14 +23,14 @@ function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');set
 function renderSummary(){const entries=Object.entries(sitesCache).map(([id,s])=>({id,...s})).filter(s=>s.meta?.active!==false);const total=entries.length;const onlineCount=entries.filter(online).length;const working=entries.filter(s=>diagnosis(s).kind==='working').length;const faulty=entries.filter(s=>online(s)&&['grid','solar','check'].includes(diagnosis(s).kind)).length;const offline=entries.filter(s=>!online(s)).length;$('networkSummary').innerHTML=[['Total sites',total,'Registered installations',''],['ESP32 online',onlineCount,'Heartbeat received within 40 seconds','online'],['Working properly',working,'Both monitored conditions normal','working'],['Sites with faults',faulty,'Online devices reporting abnormal relay states','fault'],['ESP32 offline',offline,'No recent device heartbeat','offline']].map(([label,value,sub,kind])=>`<div class="summary-card ${kind}"><span>${label}</span><strong>${value}</strong><small>${sub}</small></div>`).join('');}
 function renderSites(){const entries=Object.entries(sitesCache).map(([id,s])=>({id,...s})).filter(s=>s.meta?.active!==false);const q=($('siteSearch')?.value||'').trim().toLocaleLowerCase();const filtered=entries.filter(s=>[s.id,s.meta?.name,s.meta?.location].some(v=>String(v||'').toLocaleLowerCase().includes(q)));
 filtered.sort((a,b)=>{
-  const priority=s=>{
+  const rank=s=>{
     const kind=diagnosis(s).kind;
-    if(online(s)&&['grid','solar','check'].includes(kind)) return 0; // Faulty sites first
-    if(!online(s)) return 1; // Offline sites second
-    if(kind==='working') return 2; // Normal working sites last
-    return 1; // Unknown/waiting sites grouped with attention-needed sites
+    if(kind==='offline') return 1;
+    if(kind==='working') return 2;
+    if(kind==='unknown') return 1;
+    return 0; // Any online fault state: grid, solar, or check
   };
-  return priority(a)-priority(b);
+  return rank(a)-rank(b);
 });if($('searchCount'))$('searchCount').textContent=q?`Showing ${filtered.length} of ${entries.length} sites`:`${entries.length} registered site${entries.length===1?'':'s'}`;$('siteGrid').innerHTML=filtered.length?filtered.map(s=>{const d=diagnosis(s);return `<button class="site-card" data-site="${esc(s.id)}"><div class="site-card-head"><div><div class="site-name">${esc(s.meta?.name||s.id)}</div><div class="site-meta">${esc(s.id)} · ${esc(s.meta?.location||'Location not set')}</div></div><span class="status-pill ${d.kind}">${d.title}</span></div><div class="site-reason">${esc(d.reason)}</div><div class="site-updated">Last update: ${fmt(s.telemetry?.updatedAt)}</div></button>`}).join(''):q?'<div class="empty">No sites match your search. Try another site ID, name or location.</div>':'<div class="empty">No sites registered yet. Select Add site to register the first installation.</div>';document.querySelectorAll('[data-site]').forEach(b=>b.addEventListener('click',()=>openSite(b.dataset.site)));}
 function renderDetail(){const s=sitesCache[selectedSite];if(!s)return;const d=diagnosis(s);$('siteDetail').innerHTML=`<div class="detail-card"><div class="site-card-head"><div><div class="site-meta">${esc(selectedSite)} · ${esc(s.meta?.location||'Location not set')}</div><h2>${esc(s.meta?.name||selectedSite)}</h2></div><span class="status-pill ${d.kind}">${d.title}</span></div><div class="main-reason">${esc(d.reason)}</div><p class="detail-explain">${esc(d.detail)}</p><div class="detail-foot">Last communication: ${fmt(s.telemetry?.updatedAt)}</div></div>`;}
 async function openSite(id){selectedSite=id;$('overviewPage').classList.add('hidden');$('detailPage').classList.remove('hidden');renderDetail();$('eventsContent').textContent='Loading history…';try{const snap=await get(ref(db,`sites/${id}/events`));const all=snap.val()||{};const now=Date.now();selectedEvents=Object.entries(all).map(([key,e])=>({key,...e})).filter(e=>{const t=Number(e.timestamp);return Number.isFinite(t)&&t>=now-NINETY_DAYS&&t<=now+120000;}).sort((a,b)=>Number(b.timestamp)-Number(a.timestamp));renderHistory();}catch(e){$('eventsContent').textContent='Could not load history: '+e.message;}}
